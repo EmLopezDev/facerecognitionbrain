@@ -1,0 +1,15 @@
+.rankContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+}
+
+.rankContent {
+    font-size: 1.2rem;
+}
+
+.rankNumber {
+    font-size: 2rem;
+}
