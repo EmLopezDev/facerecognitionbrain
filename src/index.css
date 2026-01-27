@@ -60,6 +60,10 @@ button {
     cursor: pointer;
 }
 
+.particles-bg-canvas-self {
+    position: fixed !important;
+}
+
 #root,
 #__next {
     isolation: isolate;

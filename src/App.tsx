@@ -49,54 +49,47 @@ function App() {
         return { MODEL_ID, MODEL_VERSION_ID, requestOptions };
     };
 
-    const onSubmitForm = (evt: FormEvent<HTMLFormElement>) => {
+    const onSubmitForm = async (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         setImgRecognition(inputImgURL);
 
         const { MODEL_ID, MODEL_VERSION_ID, requestOptions } =
             createJSONRequestOptions(inputImgURL);
 
-        fetch(
-            `https://api.clarifai.com/v2/models/${MODEL_ID}/versions/${MODEL_VERSION_ID}/outputs`,
-            requestOptions,
-        )
-            .then((response) => response.json())
-            .then((result) => {
-                const regions = result.outputs[0].data.regions;
+        try {
+            const response = await fetch(
+                `https://api.clarifai.com/v2/models/${MODEL_ID}/versions/${MODEL_VERSION_ID}/outputs`,
+                requestOptions,
+            );
+            const data = await response.json();
+            const regions = data.outputs[0].data.regions;
+            regions.forEach((region) => {
+                // Accessing and rounding the bounding box values
+                const boundingBox = region.region_info.bounding_box;
+                const topRow = boundingBox.top_row.toFixed(3);
+                const leftCol = boundingBox.left_col.toFixed(3);
+                const bottomRow = boundingBox.bottom_row.toFixed(3);
+                const rightCol = boundingBox.right_col.toFixed(3);
 
-                regions.forEach((region) => {
-                    // Accessing and rounding the bounding box values
-                    const boundingBox = region.region_info.bounding_box;
-                    const topRow = boundingBox.top_row.toFixed(3);
-                    const leftCol = boundingBox.left_col.toFixed(3);
-                    const bottomRow = boundingBox.bottom_row.toFixed(3);
-                    const rightCol = boundingBox.right_col.toFixed(3);
+                region.data.concepts.forEach((concept) => {
+                    // Accessing and rounding the concept value
+                    const name = concept.name;
+                    const value = concept.value.toFixed(4);
 
-                    region.data.concepts.forEach((concept) => {
-                        // Accessing and rounding the concept value
-                        const name = concept.name;
-                        const value = concept.value.toFixed(4);
-
-                        console.log(
-                            `${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`,
-                        );
-                    });
+                    console.log(
+                        `${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`,
+                    );
                 });
-            })
-            .catch((error: Error) => {
-                if (error instanceof Error) {
-                    console.error(error);
-                }
             });
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error(error);
+            }
+        }
     };
 
     return (
         <>
-            <ParticlesBg
-                type="cobweb"
-                num={300}
-                bg
-            />
             <header className="headerContainer">
                 <Logo />
                 <Navigation />
@@ -109,6 +102,11 @@ function App() {
                 />
                 {imgRecognition && <RecognitionImg imgSrc={imgRecognition} />}
             </main>
+            <ParticlesBg
+                type="cobweb"
+                num={300}
+                bg
+            />
         </>
     );
 }
