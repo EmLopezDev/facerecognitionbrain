@@ -64,7 +64,6 @@ function App() {
             const data = await response.json();
             const regions = data.outputs[0].data.regions;
             regions.forEach((region) => {
-                // Accessing and rounding the bounding box values
                 const boundingBox = region.region_info.bounding_box;
                 const topRow = boundingBox.top_row.toFixed(3);
                 const leftCol = boundingBox.left_col.toFixed(3);
@@ -72,7 +71,6 @@ function App() {
                 const rightCol = boundingBox.right_col.toFixed(3);
 
                 region.data.concepts.forEach((concept) => {
-                    // Accessing and rounding the concept value
                     const name = concept.name;
                     const value = concept.value.toFixed(4);
 
@@ -100,7 +98,7 @@ function App() {
                     onChange={onInputChange}
                     onSubmit={onSubmitForm}
                 />
-                {imgRecognition && <RecognitionImg imgSrc={imgRecognition} />}
+                <RecognitionImg imgSrc={imgRecognition} />
             </main>
             <ParticlesBg
                 type="cobweb"

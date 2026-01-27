@@ -4,16 +4,16 @@ type RecognitionImgType = {
     imgSrc: string;
 };
 
-function RecognitionImg({ imgSrc }: RecognitionImgType) {
+function RecognitionImg({ imgSrc = "" }: RecognitionImgType) {
     return (
-        <div className="recognitionImgContainer">
-            {imgSrc && (
+        imgSrc && (
+            <div className="recognitionImgContainer">
                 <img
                     src={imgSrc}
                     alt=""
                 />
-            )}
-        </div>
+            </div>
+        )
     );
 }
 
