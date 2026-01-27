@@ -14,6 +14,12 @@ type BoundingBoxType = {
     top_row: number;
 };
 
+type RegionType = {
+    region_info: {
+        bounding_box: BoundingBoxType;
+    };
+};
+
 export type OutlineType = {
     leftCol: number;
     topRow: number;
@@ -24,7 +30,7 @@ export type OutlineType = {
 function App() {
     const [inputImgURL, setInputImgURL] = useState("");
     const [imgRecognition, setImgRecognition] = useState("");
-    const [boxOutline, setBoxOutline] = useState<OutlineType | null>(null);
+    const [boxOutlines, setBoxOutlines] = useState<OutlineType[]>([]);
 
     const onInputChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setInputImgURL(evt.target.value);
@@ -46,7 +52,7 @@ function App() {
     };
 
     const displayFaceOutline = (outline: OutlineType) => {
-        setBoxOutline(outline);
+        setBoxOutlines((prevOutlines) => [...prevOutlines, outline]);
     };
 
     const createJSONRequestOptions = (imgURL: string) => {
@@ -86,6 +92,7 @@ function App() {
     const onSubmitForm = async (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         setImgRecognition(inputImgURL);
+        setBoxOutlines([]);
 
         const { MODEL_ID, MODEL_VERSION_ID, requestOptions } =
             createJSONRequestOptions(inputImgURL);
@@ -97,8 +104,8 @@ function App() {
             );
             const data = await response.json();
             const regions = data.outputs[0].data.regions;
-            regions.forEach((region) => {
-                const boundingBox = region.region_info.bounding_box;
+            regions.forEach(({ region_info }: RegionType) => {
+                const boundingBox = region_info.bounding_box;
                 // const topRow = boundingBox.top_row.toFixed(3);
                 // const leftCol = boundingBox.left_col.toFixed(3);
                 // const bottomRow = boundingBox.bottom_row.toFixed(3);
@@ -126,7 +133,7 @@ function App() {
                     onSubmit={onSubmitForm}
                 />
                 <RecognitionImg
-                    outline={boxOutline}
+                    outlines={boxOutlines}
                     imgSrc={imgRecognition}
                 />
             </main>

@@ -3,11 +3,10 @@ import { type OutlineType } from "../../App";
 
 type RecognitionImgType = {
     imgSrc: string;
-    outline: OutlineType | null;
+    outlines: OutlineType[];
 };
 
-function RecognitionImg({ imgSrc = "", outline }: RecognitionImgType) {
-    const { leftCol, topRow, rightCol, bottomRow } = outline ?? {};
+function RecognitionImg({ imgSrc = "", outlines }: RecognitionImgType) {
     return (
         imgSrc && (
             <div className="recognitionImgContainer">
@@ -17,15 +16,23 @@ function RecognitionImg({ imgSrc = "", outline }: RecognitionImgType) {
                         src={imgSrc}
                         alt=""
                     />
-                    <div
-                        className="recognitionImgOutline"
-                        style={{
-                            top: topRow,
-                            right: rightCol,
-                            bottom: bottomRow,
-                            left: leftCol,
-                        }}
-                    ></div>
+                    {outlines.length &&
+                        outlines.map(
+                            ({ topRow, rightCol, bottomRow, leftCol }, idx) => {
+                                return (
+                                    <div
+                                        key={idx}
+                                        className="recognitionImgOutline"
+                                        style={{
+                                            top: topRow,
+                                            right: rightCol,
+                                            bottom: bottomRow,
+                                            left: leftCol,
+                                        }}
+                                    ></div>
+                                );
+                            },
+                        )}
                 </div>
             </div>
         )
