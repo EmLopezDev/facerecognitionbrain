@@ -1,5 +1,19 @@
 .recognitionImgContainer {
+    display: flex;
+    justify-content: center;
+}
+.recognitionImg {
+    position: absolute;
     margin: 0 auto;
     width: 400px;
     height: auto;
+}
+
+.recognitionImgOutline {
+    position: absolute;
+    box-shadow: 0 0 0 3px #149df2 inset;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    cursor: pointer;
 }

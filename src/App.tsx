@@ -7,12 +7,46 @@ import ParticlesBg from "particles-bg";
 import RecognitionImg from "./components/RecognitionImg/RecognitionImg";
 import "./App.css";
 
+type BoundingBoxType = {
+    bottom_row: number;
+    left_col: number;
+    right_col: number;
+    top_row: number;
+};
+
+export type OutlineType = {
+    leftCol: number;
+    topRow: number;
+    rightCol: number;
+    bottomRow: number;
+};
+
 function App() {
     const [inputImgURL, setInputImgURL] = useState("");
     const [imgRecognition, setImgRecognition] = useState("");
+    const [boxOutline, setBoxOutline] = useState<OutlineType | null>(null);
 
     const onInputChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setInputImgURL(evt.target.value);
+    };
+
+    const onCalculateFaceLocation = (boundingBox: BoundingBoxType) => {
+        const image = document.getElementById(
+            "recognitionImg",
+        ) as HTMLImageElement;
+        const width = Number(image.width);
+        const height = Number(image.height);
+        const outline = {
+            leftCol: boundingBox.left_col * width,
+            topRow: boundingBox.top_row * height,
+            rightCol: width - boundingBox.right_col * width,
+            bottomRow: height - boundingBox.bottom_row * height,
+        };
+        return outline;
+    };
+
+    const displayFaceOutline = (outline: OutlineType) => {
+        setBoxOutline(outline);
     };
 
     const createJSONRequestOptions = (imgURL: string) => {
@@ -65,19 +99,12 @@ function App() {
             const regions = data.outputs[0].data.regions;
             regions.forEach((region) => {
                 const boundingBox = region.region_info.bounding_box;
-                const topRow = boundingBox.top_row.toFixed(3);
-                const leftCol = boundingBox.left_col.toFixed(3);
-                const bottomRow = boundingBox.bottom_row.toFixed(3);
-                const rightCol = boundingBox.right_col.toFixed(3);
-
-                region.data.concepts.forEach((concept) => {
-                    const name = concept.name;
-                    const value = concept.value.toFixed(4);
-
-                    console.log(
-                        `${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`,
-                    );
-                });
+                // const topRow = boundingBox.top_row.toFixed(3);
+                // const leftCol = boundingBox.left_col.toFixed(3);
+                // const bottomRow = boundingBox.bottom_row.toFixed(3);
+                // const rightCol = boundingBox.right_col.toFixed(3);
+                const outline = onCalculateFaceLocation(boundingBox);
+                displayFaceOutline(outline);
             });
         } catch (error) {
             if (error instanceof Error) {
@@ -98,7 +125,10 @@ function App() {
                     onChange={onInputChange}
                     onSubmit={onSubmitForm}
                 />
-                <RecognitionImg imgSrc={imgRecognition} />
+                <RecognitionImg
+                    outline={boxOutline}
+                    imgSrc={imgRecognition}
+                />
             </main>
             <ParticlesBg
                 type="cobweb"
