@@ -122,6 +122,11 @@ function App() {
     };
 
     const onRouteChange = (route: RouteType) => {
+        if (route !== "home") {
+            setInputImgURL("");
+            setImgRecognition("");
+            setBoxOutlines([]);
+        }
         setRoute(route);
     };
 
