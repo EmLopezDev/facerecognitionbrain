@@ -1,11 +1,13 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import Navigation from "./components/Navigation/Navigation";
 import Logo from "./components/Logo/Logo";
-import InputForm from "./components/Input/InputForm";
+import InputForm from "./components/InputForm/InputForm";
 import Rank from "./components/Rank/Rank";
 import ParticlesBg from "particles-bg";
 import RecognitionImg from "./components/RecognitionImg/RecognitionImg";
 import "./App.css";
+import SignIn from "./components/SignIn/SignIn";
+import Register from "./components/Register/Register";
 
 type BoundingBoxType = {
     bottom_row: number;
@@ -27,10 +29,13 @@ export type OutlineType = {
     bottomRow: number;
 };
 
+type RouteType = "signin" | "home" | "register";
+
 function App() {
     const [inputImgURL, setInputImgURL] = useState("");
     const [imgRecognition, setImgRecognition] = useState("");
     const [boxOutlines, setBoxOutlines] = useState<OutlineType[]>([]);
+    const [route, setRoute] = useState<RouteType>("signin");
 
     const onInputChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setInputImgURL(evt.target.value);
@@ -106,10 +111,6 @@ function App() {
             const regions = data.outputs[0].data.regions;
             regions.forEach(({ region_info }: RegionType) => {
                 const boundingBox = region_info.bounding_box;
-                // const topRow = boundingBox.top_row.toFixed(3);
-                // const leftCol = boundingBox.left_col.toFixed(3);
-                // const bottomRow = boundingBox.bottom_row.toFixed(3);
-                // const rightCol = boundingBox.right_col.toFixed(3);
                 const outline = onCalculateFaceLocation(boundingBox);
                 displayFaceOutline(outline);
             });
@@ -120,22 +121,37 @@ function App() {
         }
     };
 
+    const onRouteChange = (route: RouteType) => {
+        setRoute(route);
+    };
+
     return (
         <>
             <header className="headerContainer">
                 <Logo />
-                <Navigation />
+                {route === "home" && <Navigation onSignOut={onRouteChange} />}
             </header>
             <main className="mainContainer">
-                <Rank />
-                <InputForm
-                    onChange={onInputChange}
-                    onSubmit={onSubmitForm}
-                />
-                <RecognitionImg
-                    outlines={boxOutlines}
-                    imgSrc={imgRecognition}
-                />
+                {route === "signin" ? (
+                    <SignIn
+                        onSignIn={onRouteChange}
+                        onRegister={onRouteChange}
+                    />
+                ) : route === "register" ? (
+                    <Register onRegister={onRouteChange} />
+                ) : (
+                    <>
+                        <Rank />
+                        <InputForm
+                            onChange={onInputChange}
+                            onSubmit={onSubmitForm}
+                        />
+                        <RecognitionImg
+                            outlines={boxOutlines}
+                            imgSrc={imgRecognition}
+                        />
+                    </>
+                )}
             </main>
             <ParticlesBg
                 type="cobweb"

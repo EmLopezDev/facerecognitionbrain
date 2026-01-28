@@ -1,9 +1,21 @@
 import "./Navigation.css";
 
-function Navigation() {
+type NavigationType = {
+    onSignOut: (str: "signin") => void;
+};
+
+function Navigation({ onSignOut }: NavigationType) {
     return (
-        <nav className="navigation">
-            <p className="navigationContent">Sign Out</p>
+        <nav className="navigationContent">
+            <a
+                onClick={(e) => {
+                    e.preventDefault();
+                    onSignOut("signin");
+                }}
+                href=""
+            >
+                Sign out
+            </a>
         </nav>
     );
 }
