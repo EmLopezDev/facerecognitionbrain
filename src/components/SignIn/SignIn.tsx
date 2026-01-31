@@ -1,3 +1,4 @@
+import { useState, type ChangeEvent } from "react";
 import "./SignIn.css";
 
 type SignInType = {
@@ -6,6 +7,34 @@ type SignInType = {
 };
 
 function SignIn({ onSignIn, onRegister }: SignInType) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const onEmailChange = (evt: ChangeEvent<HTMLInputElement>) => {
+        setEmail(evt.target.value);
+    };
+
+    const onPasswordChange = (evt: ChangeEvent<HTMLInputElement>) => {
+        setPassword(evt.target.value);
+    };
+
+    const onSubmit = () => {
+        fetch("http://localhost:3000/signin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email,
+                password,
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data) {
+                    onSignIn("home");
+                }
+            });
+    };
+
     return (
         <form
             className="signInForm"
@@ -13,7 +42,7 @@ function SignIn({ onSignIn, onRegister }: SignInType) {
             action=""
             onSubmit={(e) => {
                 e.preventDefault();
-                onSignIn("home");
+                onSubmit();
             }}
         >
             <fieldset className="signInFormCredentials">
@@ -30,6 +59,7 @@ function SignIn({ onSignIn, onRegister }: SignInType) {
                         className="signInFormInput"
                         type="email"
                         placeholder="example@gmail.com"
+                        onChange={onEmailChange}
                         required
                     />
                 </div>
@@ -44,6 +74,7 @@ function SignIn({ onSignIn, onRegister }: SignInType) {
                         id="password"
                         className="signInFormInput"
                         type="password"
+                        onChange={onPasswordChange}
                         required
                     />
                 </div>
