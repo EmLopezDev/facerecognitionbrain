@@ -116,12 +116,33 @@ function App() {
                 requestOptions,
             );
             const data = await response.json();
-            const regions = data.outputs[0].data.regions;
-            regions.forEach(({ region_info }: RegionType) => {
-                const boundingBox = region_info.bounding_box;
-                const outline = onCalculateFaceLocation(boundingBox);
-                displayFaceOutline(outline);
-            });
+            if (data) {
+                fetch("http://localhost:3000/image", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        id: user?.id,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((count) =>
+                        setUser((prevUser) => {
+                            if (!prevUser) return prevUser;
+                            return {
+                                ...prevUser,
+                                entries: count,
+                            };
+                        }),
+                    );
+                const regions = data.outputs[0].data.regions;
+                regions.forEach(({ region_info }: RegionType) => {
+                    const boundingBox = region_info.bounding_box;
+                    const outline = onCalculateFaceLocation(boundingBox);
+                    displayFaceOutline(outline);
+                });
+            }
         } catch (error) {
             if (error instanceof Error) {
                 console.error(error);
