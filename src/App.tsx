@@ -31,11 +31,19 @@ export type OutlineType = {
 
 type RouteType = "signin" | "home" | "register";
 
+export type UserType = {
+    id: string;
+    name: string;
+    email: string;
+    entries: number;
+};
+
 function App() {
     const [inputImgURL, setInputImgURL] = useState("");
     const [imgRecognition, setImgRecognition] = useState("");
     const [boxOutlines, setBoxOutlines] = useState<OutlineType[]>([]);
     const [route, setRoute] = useState<RouteType>("signin");
+    const [user, setUser] = useState<UserType | null>(null);
 
     const onInputChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setInputImgURL(evt.target.value);
@@ -130,6 +138,10 @@ function App() {
         setRoute(route);
     };
 
+    const onUserChange = (user: UserType) => {
+        setUser(user);
+    };
+
     return (
         <>
             <header className="headerContainer">
@@ -141,21 +153,27 @@ function App() {
                     <SignIn
                         onSignIn={onRouteChange}
                         onRegister={onRouteChange}
+                        onLoadUser={onUserChange}
                     />
                 ) : route === "register" ? (
                     <Register onRegister={onRouteChange} />
                 ) : (
-                    <>
-                        <Rank />
-                        <InputForm
-                            onChange={onInputChange}
-                            onSubmit={onSubmitForm}
-                        />
-                        <RecognitionImg
-                            outlines={boxOutlines}
-                            imgSrc={imgRecognition}
-                        />
-                    </>
+                    user && (
+                        <>
+                            <Rank
+                                userName={user?.name}
+                                userEntries={user?.entries}
+                            />
+                            <InputForm
+                                onChange={onInputChange}
+                                onSubmit={onSubmitForm}
+                            />
+                            <RecognitionImg
+                                outlines={boxOutlines}
+                                imgSrc={imgRecognition}
+                            />
+                        </>
+                    )
                 )}
             </main>
             <ParticlesBg

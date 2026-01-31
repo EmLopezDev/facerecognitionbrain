@@ -1,12 +1,14 @@
 import { useState, type ChangeEvent } from "react";
+import { type UserType } from "../../App";
 import "./SignIn.css";
 
 type SignInType = {
     onSignIn: (str: "home") => void;
     onRegister: (str: "register") => void;
+    onLoadUser: (user: UserType) => void;
 };
 
-function SignIn({ onSignIn, onRegister }: SignInType) {
+function SignIn({ onSignIn, onRegister, onLoadUser }: SignInType) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -28,8 +30,9 @@ function SignIn({ onSignIn, onRegister }: SignInType) {
             }),
         })
             .then((response) => response.json())
-            .then((data) => {
-                if (data) {
+            .then((user) => {
+                if (user.id) {
+                    onLoadUser(user);
                     onSignIn("home");
                 }
             });

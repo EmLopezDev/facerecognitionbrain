@@ -1,3 +1,4 @@
+import { useState, type ChangeEvent } from "react";
 import "./Register.css";
 
 type RegisterType = {
@@ -5,6 +6,41 @@ type RegisterType = {
 };
 
 function Register({ onRegister }: RegisterType) {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const onNameChange = (evt: ChangeEvent<HTMLInputElement>) => {
+        setName(evt.target.value);
+    };
+
+    const onEmailChange = (evt: ChangeEvent<HTMLInputElement>) => {
+        setEmail(evt.target.value);
+    };
+
+    const onPasswordChange = (evt: ChangeEvent<HTMLInputElement>) => {
+        setPassword(evt.target.value);
+    };
+
+    const onSubmit = () => {
+        fetch("http://localhost:3000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data) {
+                    onRegister("signin");
+                }
+            })
+            .catch(console.error);
+    };
+
     return (
         <form
             className="registerForm"
@@ -12,7 +48,8 @@ function Register({ onRegister }: RegisterType) {
             action=""
             onSubmit={(e) => {
                 e.preventDefault();
-                onRegister("signin");
+                onSubmit();
+                // onRegister("signin");
             }}
         >
             <fieldset className="registerFormCredentials">
@@ -29,6 +66,7 @@ function Register({ onRegister }: RegisterType) {
                         className="registerFormInput"
                         type="text"
                         placeholder="John Doe"
+                        onChange={onNameChange}
                         required
                     />
                 </div>
@@ -44,6 +82,7 @@ function Register({ onRegister }: RegisterType) {
                         className="registerFormInput"
                         type="email"
                         placeholder="example@gmail.com"
+                        onChange={onEmailChange}
                         required
                     />
                 </div>
@@ -58,6 +97,7 @@ function Register({ onRegister }: RegisterType) {
                         id="password"
                         className="registerFormInput"
                         type="password"
+                        onChange={onPasswordChange}
                         required
                     />
                 </div>

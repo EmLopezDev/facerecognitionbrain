@@ -1,10 +1,15 @@
 import "./Rank.css";
 
-function Rank() {
+type RankType = {
+    userName: string;
+    userEntries: number;
+};
+
+function Rank({ userName, userEntries }: RankType) {
     return (
         <div className="rankContainer">
-            <p className="rankContent">Your current rank is...</p>
-            <span className="rankNumber">#5</span>
+            <p className="rankContent">{`${userName} 's current rank is...`}</p>
+            <span className="rankNumber">{userEntries}</span>
         </div>
     );
 }
