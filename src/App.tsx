@@ -68,53 +68,21 @@ function App() {
         setBoxOutlines((prevOutlines) => [...prevOutlines, outline]);
     };
 
-    const createJSONRequestOptions = (imgURL: string) => {
-        const PAT = "445fda128afe40798280415405dcbef1";
-        const USER_ID = "em-lopez-dev";
-        const APP_ID = "smart-brain";
-        const MODEL_ID = "face-detection";
-        const MODEL_VERSION_ID = "45fb9a671625463fa646c3523a3087d5";
-
-        const raw = JSON.stringify({
-            user_app_id: {
-                user_id: USER_ID,
-                app_id: APP_ID,
-            },
-            inputs: [
-                {
-                    data: {
-                        image: {
-                            url: imgURL,
-                        },
-                    },
-                },
-            ],
-        });
-
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                Authorization: "Key " + PAT,
-            },
-            body: raw,
-        };
-        return { MODEL_ID, MODEL_VERSION_ID, requestOptions };
-    };
-
     const onSubmitForm = async (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         setImgRecognition(inputImgURL);
         setBoxOutlines([]);
 
-        const { MODEL_ID, MODEL_VERSION_ID, requestOptions } =
-            createJSONRequestOptions(inputImgURL);
-
         try {
-            const response = await fetch(
-                `https://api.clarifai.com/v2/models/${MODEL_ID}/versions/${MODEL_VERSION_ID}/outputs`,
-                requestOptions,
-            );
+            const response = await fetch("http://localhost:3000/imageurl", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    url: inputImgURL,
+                }),
+            });
             const data = await response.json();
             if (data) {
                 fetch("http://localhost:3000/image", {
@@ -135,7 +103,8 @@ function App() {
                                 entries: count,
                             };
                         }),
-                    );
+                    )
+                    .catch(console.error);
                 const regions = data.outputs[0].data.regions;
                 regions.forEach(({ region_info }: RegionType) => {
                     const boundingBox = region_info.bounding_box;

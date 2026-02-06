@@ -33,8 +33,8 @@ function Register({ onRegister }: RegisterType) {
             }),
         })
             .then((response) => response.json())
-            .then((data) => {
-                if (data) {
+            .then((user) => {
+                if (user.id) {
                     onRegister("signin");
                 }
             })
@@ -49,7 +49,6 @@ function Register({ onRegister }: RegisterType) {
             onSubmit={(e) => {
                 e.preventDefault();
                 onSubmit();
-                // onRegister("signin");
             }}
         >
             <fieldset className="registerFormCredentials">
