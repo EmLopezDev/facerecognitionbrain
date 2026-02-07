@@ -74,18 +74,21 @@ function App() {
         setBoxOutlines([]);
 
         try {
-            const response = await fetch("http://localhost:3000/imageurl", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const response = await fetch(
+                "https://smart-brain-api-efly.onrender.com/imageurl",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        url: inputImgURL,
+                    }),
                 },
-                body: JSON.stringify({
-                    url: inputImgURL,
-                }),
-            });
+            );
             const data = await response.json();
             if (data) {
-                fetch("http://localhost:3000/image", {
+                fetch("https://smart-brain-api-efly.onrender.com/image", {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
